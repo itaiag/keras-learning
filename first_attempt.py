@@ -10,6 +10,7 @@ from keras.layers import Activation, Dense
 from keras.optimizers import Adam
 from keras.metrics import categorical_crossentropy
 
+
 # https://www.youtube.com/watch?v=qFJeN9V1ZsI
 
 train_labels = []
@@ -54,5 +55,46 @@ model.compile(optimizer=Adam(learning_rate=0.0001), loss='sparse_categorical_cro
 model.fit(x=scaled_train_samples, y=train_labels, validation_split=0.1, batch_size=10, epochs=30, shuffle=True,verbose=2)
 
 
+# Lets create some test data
 
+test_labels = []
+test_samples = []
+
+for i in range(10):
+    # The ~5% of younger individuals who did experience side effects
+    random_younger = randint(13, 64)
+    test_samples.append(random_younger)
+    test_labels.append(1)
+
+    # The ~5% of older individuals who did not experience side effects
+    random_older = randint(65, 100)
+    test_samples.append(random_older)
+    test_labels.append(0)
+
+for i in range(200):
+    # The ~95% of younger individuals who did not experience side effects
+    random_younger = randint(13, 64)
+    test_samples.append(random_younger)
+    test_labels.append(0)
+
+    # The ~95% of older individuals who did experience side effects
+    random_older = randint(65, 100)
+    test_samples.append(random_older)
+    test_labels.append(1)
+
+test_labels = np.array(test_labels)
+test_samples = np.array(test_samples)
+test_labels, test_samples = shuffle(test_labels, test_samples)
+
+scaled_test_samples = scaler.fit_transform(test_samples.reshape(-1, 1))
+
+# Predict
+predictions = model.predict(x=scaled_test_samples, batch_size=10, verbose=0)
+for i in predictions:
+    print(i)
+
+rounded_predictions = np.argmax(predictions, axis=-1)
+
+for i in rounded_predictions:
+    print(i)
 
